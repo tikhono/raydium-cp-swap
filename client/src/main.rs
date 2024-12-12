@@ -427,6 +427,9 @@ fn main() -> Result<()> {
             let amm_config_state = deserialize_anchor_account::<raydium_cp_swap::states::AmmConfig>(
                 amm_config_account.as_ref().unwrap(),
             )?;
+            let user_discount = deserialize_anchor_account::<raydium_cp_swap::states::UserDiscount>(
+                amm_config_account.as_ref().unwrap(),
+            )?; //TODO:fix this
             let token_0_vault_info =
                 StateWithExtensionsMut::<Account>::unpack(&mut token_0_vault_data)?;
             let token_1_vault_info =
@@ -500,6 +503,7 @@ fn main() -> Result<()> {
                 amm_config_state.trade_fee_rate,
                 amm_config_state.protocol_fee_rate,
                 amm_config_state.fund_fee_rate,
+                user_discount.discount_nominator,
             )
             .ok_or(raydium_cp_swap::error::ErrorCode::ZeroTradingTokens)
             .unwrap();
@@ -581,6 +585,9 @@ fn main() -> Result<()> {
             let amm_config_state = deserialize_anchor_account::<raydium_cp_swap::states::AmmConfig>(
                 amm_config_account.as_ref().unwrap(),
             )?;
+            let user_discount = deserialize_anchor_account::<raydium_cp_swap::states::UserDiscount>(
+                amm_config_account.as_ref().unwrap(),
+            )?; //TODO:fix this
             let token_0_vault_info =
                 StateWithExtensionsMut::<Account>::unpack(&mut token_0_vault_data)?;
             let token_1_vault_info =
@@ -654,6 +661,7 @@ fn main() -> Result<()> {
                 amm_config_state.trade_fee_rate,
                 amm_config_state.protocol_fee_rate,
                 amm_config_state.fund_fee_rate,
+                user_discount.discount_nominator,
             )
             .ok_or(raydium_cp_swap::error::ErrorCode::ZeroTradingTokens)
             .unwrap();
