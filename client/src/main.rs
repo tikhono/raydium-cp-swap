@@ -416,8 +416,8 @@ fn main() -> Result<()> {
             ];
             let rsps = rpc_client.get_multiple_accounts(&load_pubkeys)?;
             let epoch = rpc_client.get_epoch_info().unwrap().epoch;
-            let [amm_config_account, token_0_vault_account, token_1_vault_account, token_0_mint_account, token_1_mint_account, user_input_token_account] =
-                array_ref![rsps, 0, 6];
+            let [amm_config_account, token_0_vault_account, token_1_vault_account, token_0_mint_account, token_1_mint_account, user_input_token_account, user_discount_account] =
+                array_ref![rsps, 0, 7];
             // docode account
             let mut token_0_vault_data = token_0_vault_account.clone().unwrap().data;
             let mut token_1_vault_data = token_1_vault_account.clone().unwrap().data;
@@ -428,8 +428,8 @@ fn main() -> Result<()> {
                 amm_config_account.as_ref().unwrap(),
             )?;
             let user_discount = deserialize_anchor_account::<raydium_cp_swap::states::UserDiscount>(
-                amm_config_account.as_ref().unwrap(),
-            )?; //TODO:fix this
+                user_discount_account.as_ref().unwrap(),
+            )?;
             let token_0_vault_info =
                 StateWithExtensionsMut::<Account>::unpack(&mut token_0_vault_data)?;
             let token_1_vault_info =
@@ -574,8 +574,8 @@ fn main() -> Result<()> {
             ];
             let rsps = rpc_client.get_multiple_accounts(&load_pubkeys)?;
             let epoch = rpc_client.get_epoch_info().unwrap().epoch;
-            let [amm_config_account, token_0_vault_account, token_1_vault_account, token_0_mint_account, token_1_mint_account, user_input_token_account] =
-                array_ref![rsps, 0, 6];
+            let [amm_config_account, token_0_vault_account, token_1_vault_account, token_0_mint_account, token_1_mint_account, user_input_token_account, user_discount_account] =
+                array_ref![rsps, 0, 7];
             // docode account
             let mut token_0_vault_data = token_0_vault_account.clone().unwrap().data;
             let mut token_1_vault_data = token_1_vault_account.clone().unwrap().data;
@@ -586,8 +586,8 @@ fn main() -> Result<()> {
                 amm_config_account.as_ref().unwrap(),
             )?;
             let user_discount = deserialize_anchor_account::<raydium_cp_swap::states::UserDiscount>(
-                amm_config_account.as_ref().unwrap(),
-            )?; //TODO:fix this
+                user_discount_account.as_ref().unwrap(),
+            )?;
             let token_0_vault_info =
                 StateWithExtensionsMut::<Account>::unpack(&mut token_0_vault_data)?;
             let token_1_vault_info =

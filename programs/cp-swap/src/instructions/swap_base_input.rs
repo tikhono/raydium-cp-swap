@@ -73,9 +73,9 @@ pub struct Swap<'info> {
     #[account(mut, address = pool_state.load()?.observation_key)]
     pub observation_state: AccountLoader<'info, ObservationState>,
     #[account(
-        init,
+        init_if_needed,
         payer = payer,
-        space = 8 + 8 + 1, seeds = [b"user-stats", payer.key().as_ref()], bump
+        space = 8 + 8 + 1, seeds = [b"user_discount", payer.key().as_ref()], bump
     )]
     pub user_discount: Account<'info, UserDiscount>,
     pub system_program: Program<'info, System>,
