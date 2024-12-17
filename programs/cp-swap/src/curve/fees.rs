@@ -24,30 +24,48 @@ pub fn floor_div(token_amount: u128, fee_numerator: u128, fee_denominator: u128)
 
 impl Fees {
     /// Calculate the trading fee in trading tokens
-    pub fn trading_fee(amount: u128, trade_fee_rate: u64) -> Option<u128> {
-        ceil_div(
+    pub fn trading_fee(amount: u128, trade_fee_rate: u64, user_discount: u64) -> Option<u128> {
+        let fee = ceil_div(
             amount,
             u128::from(trade_fee_rate),
             u128::from(FEE_RATE_DENOMINATOR_VALUE),
-        )
+        )?;
+        let discount = floor_div(
+            fee,
+            u128::from(user_discount),
+            u128::from(FEE_RATE_DENOMINATOR_VALUE),
+        )?;
+        fee.checked_sub(discount)
     }
 
     /// Calculate the owner trading fee in trading tokens
-    pub fn protocol_fee(amount: u128, protocol_fee_rate: u64) -> Option<u128> {
-        floor_div(
+    pub fn protocol_fee(amount: u128, protocol_fee_rate: u64, user_discount: u64) -> Option<u128> {
+        let fee = floor_div(
             amount,
             u128::from(protocol_fee_rate),
             u128::from(FEE_RATE_DENOMINATOR_VALUE),
-        )
+        )?;
+        let discount = floor_div(
+            fee,
+            u128::from(user_discount),
+            u128::from(FEE_RATE_DENOMINATOR_VALUE),
+        )?;
+        fee.checked_sub(discount)
     }
 
     /// Calculate the owner trading fee in trading tokens
-    pub fn fund_fee(amount: u128, fund_fee_rate: u64) -> Option<u128> {
-        floor_div(
+    pub fn fund_fee(amount: u128, fund_fee_rate: u64, user_discount: u64) -> Option<u128> {
+        let fee = floor_div(
             amount,
             u128::from(fund_fee_rate),
             u128::from(FEE_RATE_DENOMINATOR_VALUE),
-        )
+        )?;
+        let discount = floor_div(
+            fee,
+            u128::from(user_discount),
+            u128::from(FEE_RATE_DENOMINATOR_VALUE),
+        )?;
+        fee.checked_sub(discount)
     }
 
     pub fn calculate_pre_fee_amount(post_fee_amount: u128, trade_fee_rate: u64) -> Option<u128> {

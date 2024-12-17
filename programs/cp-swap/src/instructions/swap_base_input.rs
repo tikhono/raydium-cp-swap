@@ -10,6 +10,7 @@ use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 #[derive(Accounts)]
 pub struct Swap<'info> {
     /// The user performing the swap
+    #[account(mut)]
     pub payer: Signer<'info>,
 
     /// CHECK: pool vault and lp mint authority
@@ -71,6 +72,15 @@ pub struct Swap<'info> {
     /// The program account for the most recent oracle observation
     #[account(mut, address = pool_state.load()?.observation_key)]
     pub observation_state: AccountLoader<'info, ObservationState>,
+    #[account(
+        init_if_needed,
+        payer = payer,
+        space = UserDiscount::LEN,
+        seeds = [b"user_discount", payer.key().as_ref()],
+        bump
+    )]
+    pub user_discount: Account<'info, UserDiscount>,
+    pub system_program: Program<'info, System>,
 }
 
 pub fn swap_base_input(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Result<()> {
@@ -150,6 +160,7 @@ pub fn swap_base_input(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u
         ctx.accounts.amm_config.trade_fee_rate,
         ctx.accounts.amm_config.protocol_fee_rate,
         ctx.accounts.amm_config.fund_fee_rate,
+        ctx.accounts.user_discount.discount_nominator,
     )
     .ok_or(ErrorCode::ZeroTradingTokens)?;
 

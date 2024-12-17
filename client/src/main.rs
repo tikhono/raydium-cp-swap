@@ -416,8 +416,8 @@ fn main() -> Result<()> {
             ];
             let rsps = rpc_client.get_multiple_accounts(&load_pubkeys)?;
             let epoch = rpc_client.get_epoch_info().unwrap().epoch;
-            let [amm_config_account, token_0_vault_account, token_1_vault_account, token_0_mint_account, token_1_mint_account, user_input_token_account] =
-                array_ref![rsps, 0, 6];
+            let [amm_config_account, token_0_vault_account, token_1_vault_account, token_0_mint_account, token_1_mint_account, user_input_token_account, user_discount_account] =
+                array_ref![rsps, 0, 7];
             // docode account
             let mut token_0_vault_data = token_0_vault_account.clone().unwrap().data;
             let mut token_1_vault_data = token_1_vault_account.clone().unwrap().data;
@@ -426,6 +426,9 @@ fn main() -> Result<()> {
             let mut user_input_token_data = user_input_token_account.clone().unwrap().data;
             let amm_config_state = deserialize_anchor_account::<raydium_cp_swap::states::AmmConfig>(
                 amm_config_account.as_ref().unwrap(),
+            )?;
+            let user_discount = deserialize_anchor_account::<raydium_cp_swap::states::UserDiscount>(
+                user_discount_account.as_ref().unwrap(),
             )?;
             let token_0_vault_info =
                 StateWithExtensionsMut::<Account>::unpack(&mut token_0_vault_data)?;
@@ -500,6 +503,7 @@ fn main() -> Result<()> {
                 amm_config_state.trade_fee_rate,
                 amm_config_state.protocol_fee_rate,
                 amm_config_state.fund_fee_rate,
+                user_discount.discount_nominator,
             )
             .ok_or(raydium_cp_swap::error::ErrorCode::ZeroTradingTokens)
             .unwrap();
@@ -570,8 +574,8 @@ fn main() -> Result<()> {
             ];
             let rsps = rpc_client.get_multiple_accounts(&load_pubkeys)?;
             let epoch = rpc_client.get_epoch_info().unwrap().epoch;
-            let [amm_config_account, token_0_vault_account, token_1_vault_account, token_0_mint_account, token_1_mint_account, user_input_token_account] =
-                array_ref![rsps, 0, 6];
+            let [amm_config_account, token_0_vault_account, token_1_vault_account, token_0_mint_account, token_1_mint_account, user_input_token_account, user_discount_account] =
+                array_ref![rsps, 0, 7];
             // docode account
             let mut token_0_vault_data = token_0_vault_account.clone().unwrap().data;
             let mut token_1_vault_data = token_1_vault_account.clone().unwrap().data;
@@ -580,6 +584,9 @@ fn main() -> Result<()> {
             let mut user_input_token_data = user_input_token_account.clone().unwrap().data;
             let amm_config_state = deserialize_anchor_account::<raydium_cp_swap::states::AmmConfig>(
                 amm_config_account.as_ref().unwrap(),
+            )?;
+            let user_discount = deserialize_anchor_account::<raydium_cp_swap::states::UserDiscount>(
+                user_discount_account.as_ref().unwrap(),
             )?;
             let token_0_vault_info =
                 StateWithExtensionsMut::<Account>::unpack(&mut token_0_vault_data)?;
@@ -654,6 +661,7 @@ fn main() -> Result<()> {
                 amm_config_state.trade_fee_rate,
                 amm_config_state.protocol_fee_rate,
                 amm_config_state.fund_fee_rate,
+                user_discount.discount_nominator,
             )
             .ok_or(raydium_cp_swap::error::ErrorCode::ZeroTradingTokens)
             .unwrap();
