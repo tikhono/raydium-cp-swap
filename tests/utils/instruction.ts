@@ -1,4 +1,4 @@
-import {Program, BN} from "@coral-xyz/anchor";
+import {Program, BN, Address} from "@coral-xyz/anchor";
 import {RaydiumCpSwap} from "../../target/types/raydium_cp_swap";
 import {
     Connection,
@@ -23,7 +23,7 @@ import {
     getPoolLpMintAddress,
     getPoolVaultAddress,
     createTokenMintAndAssociatedTokenAccount,
-    getOrcleAccountAddress,
+    getOrcleAccountAddress, getUserDiscountAddress,
 } from "./index";
 
 import {ASSOCIATED_PROGRAM_ID} from "@coral-xyz/anchor/dist/cjs/utils/token";
@@ -253,6 +253,35 @@ export async function createAmmConfig(
     const tx = await sendTransaction(connection, [ix], [owner], confirmOptions);
     console.log("init amm config tx: ", tx);
     return address;
+}
+
+export async function updateUserDiscount(
+    program: Program<RaydiumCpSwap>,
+    connection: Connection,
+    owner: Signer,
+    user: PublicKey,
+    discount: BN,
+    confirmOptions?: ConfirmOptions
+): Promise<PublicKey> {
+    const [userDiscountAddress] = await getUserDiscountAddress(
+        user,
+        program.programId
+    );
+
+    const ix = await program.methods
+        .updateUserDiscount(
+            discount
+        )
+        .accounts({
+            userDiscount: userDiscountAddress,
+            authority: owner.publicKey,
+            user: user,
+        })
+        .instruction();
+
+    const tx = await sendTransaction(connection, [ix], [owner], confirmOptions);
+    console.log("update user discount tx: ", tx);
+    return userDiscountAddress;
 }
 
 export async function initialize(
@@ -551,13 +580,8 @@ export async function swap_base_input(
         poolAddress,
         program.programId
     );
-    const [userDiscountAddress] = await PublicKey.findProgramAddress(
-        [
-            Buffer.from(
-                anchor.utils.bytes.utf8.encode("user_discount")
-            ),
-            owner.publicKey.toBuffer(),
-        ],
+    const [userDiscountAddress] = await getUserDiscountAddress(
+        owner.publicKey,
         program.programId
     );
 

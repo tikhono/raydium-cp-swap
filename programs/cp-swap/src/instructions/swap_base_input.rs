@@ -75,7 +75,9 @@ pub struct Swap<'info> {
     #[account(
         init_if_needed,
         payer = payer,
-        space = 8 + 8 + 1, seeds = [b"user_discount", payer.key().as_ref()], bump
+        space = UserDiscount::LEN,
+        seeds = [b"user_discount", payer.key().as_ref()],
+        bump
     )]
     pub user_discount: Account<'info, UserDiscount>,
     pub system_program: Program<'info, System>,

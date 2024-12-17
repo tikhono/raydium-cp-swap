@@ -105,6 +105,17 @@ pub mod raydium_cp_swap {
         instructions::update_pool_status(ctx, status)
     }
 
+    /// Update user discount
+    ///
+    /// # Arguments
+    ///
+    /// * `ctx`- The context of accounts
+    /// * `discount` - The new vaule of user discount (set discount nominator in percents according to fee denominator)
+    ///
+    pub fn update_user_discount(ctx: Context<UpdateUserDiscount>, discount: u64) -> Result<()> {
+        instructions::update_user_discount(ctx, discount)
+    }
+
     /// Collect the protocol fee accrued to the pool
     ///
     /// # Arguments
